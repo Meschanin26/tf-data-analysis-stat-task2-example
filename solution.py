@@ -1,19 +1,16 @@
 import numpy as np
-from scipy.stats import norm
+import scipy
 
+chat_id = 470764857 # Ваш chat ID, не меняйте название переменной
 
+def solution(p: float, x:np.array) -> tuple:
+    alpha = 1 - p
+    
+    r_sum = np.sum(x**2)
+    left_chi = scipy.stats.chi2.ppf((1-alpha) / 2, 2 * len(x)) * 21
+    right_chi = scipy.stats.chi2.ppf(alpha / 2, 2 * len(x)) * 21
 
-def solution(p:float, x:np.array) -> tuple:
-    # Рассчитываем выборочное среднее и выборочное стандартное отклонение
-    sample_mean = np.mean(x)
-    sample_std = np.std(x, ddof=1)
-
-    # Рассчитываем значение статистики Z-оценки для уровня доверия
-    z_critical = norm.ppf(1 - (1 - p) / 2)
-
-    # Рассчитываем левую и правую границы доверительного интервала
-    margin_error = z_critical * sample_std / np.sqrt(len(x))
-    lower_bound = sample_mean - margin_error
-    upper_bound = sample_mean + margin_error
+    lower_bound = np.sqrt(r_sum / left_chi)
+    upper_bound = np.sqrt(r_sum / right_chi)
 
     return lower_bound, upper_bound
